@@ -27,7 +27,7 @@ export const pages = [
         options: ["On-campus", "Off-campus"],
       },
       {
-        name: "Gender",
+        name: "gender",
         label: "What is your gender?",
         type: "radio",
         options: ["Male", "Female", "Other"],
