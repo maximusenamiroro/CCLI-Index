@@ -133,72 +133,82 @@ export const pages = [
     title: "What you know & how you feel",
     fields: [
       {
-        name: "knowledge_1",
-        label:
-          "I know what factors affect the cost of living on campus (e.g., accommodation, food, transport).",
-        type: "scale",
-        scaleType: "yesno",
-      },
-      {
-        name: "knowledge_2",
-        label: "I understand how hostel or accommodation fees are determined.",
-        type: "scale",
-        scaleType: "yesno",
-      },
-      {
-        name: "knowledge_3",
-        label:
-          "I am aware of financial aid, bursaries, or subsidy programs available to students like me.",
-        type: "scale",
-        scaleType: "yesno",
-      },
-      {
-        name: "knowledge_4",
-        label:
-          "I know how to budget effectively to manage my monthly expenses.",
-        type: "scale",
-        scaleType: "yesno",
-      },
-      {
-        name: "knowledge_5",
-        label:
-          "I understand how inflation or rising prices affects what I pay for goods and services on campus.",
-        type: "scale",
-        scaleType: "yesno",
-      },
-      {
-        name: "attitude_1",
-        label: "I think the current cost of living on campus is reasonable.",
-        type: "scale",
-        scaleType: "agree",
-      },
-      {
-        name: "attitude_2",
-        label: "The cost of living affects how well I can focus on my studies.",
-        type: "scale",
-        scaleType: "agree",
-      },
-      {
-        name: "attitude_3",
-        label:
-          "I often feel stressed or anxious about my finances as a student.",
-        type: "scale",
-        scaleType: "agree",
-      },
-      {
-        name: "attitude_4",
-        label:
-          "I feel my institution does enough to support students financially.",
-        type: "scale",
-        scaleType: "agree",
-      },
-      {
-        name: "attitude_5",
-        label:
-          "I worry about whether I can afford my basic needs (food, housing, transport) each month.",
-        type: "scale",
-        scaleType: "agree",
-      },
+  name: "knowledge_1",
+  label: "Are you aware of current state or federal government financial aid/loan schemes available to university students?",
+  type: "scale",
+  scaleType: "yesnounsure", // NOTE: "yesnounsure" isn't in scaleOptions either — did you mean "yesno" (Yes/No/Not sure)? See note below.
+},
+{
+  name: "knowledge_2",
+  label: "Which government agency is primarily responsible for regulating student housing and off-campus rent caps in your state/region?",
+  type: "text",
+},
+{
+  name: "knowledge_3",
+  label: "Do you know if your government provides public transport subsidies or reduced fares specifically for tertiary students?",
+  type: "scale",
+  scaleType: "yesno",
+},
+{
+  name: "knowledge_4",
+  label: "Are you aware of any government policy or subsidy regulating electricity and water tariffs for university student communities?",
+  type: "scale", 
+  scaleType: "yesnounsure",
+},
+{
+  name: "knowledge_5",
+  label: "Do you know if national statistical agencies (e.g., National Bureau of Statistics / Bureau of Labor Statistics) include student-specific consumer baskets when calculating national inflation?",
+  type: "scale",
+  scaleType: "yesno",
+},
+{
+  name: "knowledge_6",
+  label: "Are you aware of the statutory role of the Ministry of Education regarding price stability within and around campus environments?",
+  type: "scale",
+  scaleType: "yesnounsure",
+},
+{
+  name: "knowledge_7",
+  label: "Do you know the eligibility criteria required to access government-sponsored emergency relief or food assistance funds for students?",
+  type: "scale",
+  scaleType: "yesno",
+},
+{
+  name: "attitude_1",
+  label: "How effective do you feel government agencies are in preventing predatory rent pricing by private landlords around campus?",
+  type: "scale",
+  scaleType: "effectiveness",
+},
+{
+  name: "attitude_2",
+  label: "Do you believe government student loan/grant disbursement timelines are prompt enough to cushion campus inflation?",
+  type: "scale",
+  scaleType: "agree",
+},
+{
+  name: "attitude_3",
+  label: "In your opinion, to what extent is the government responsible for mitigating the rising cost of essential food items near universities?",
+  type: "scale",
+  scaleType: "responsibility",
+},
+{
+  name: "attitude_4",
+  label: "How fair do you rate current government-regulated campus transportation pricing relative to average student monthly allowances?",
+  type: "scale",
+  scaleType: "fairness",
+},
+{
+  name: "attitude_5",
+  label: "How confident are you that government policymakers consider student cost-of-living data when updating minimum wage or national economic policies?",
+  type: "scale",
+  scaleType: "confidence",
+},
+{
+  name: "attitude_6",
+  label: "Do you feel government agencies prioritize student welfare as heavily as other public sectors during economic downturns?",
+  type: "scale",
+  scaleType: "yesnoneutral",
+},
     ],
   },
   {
@@ -206,36 +216,68 @@ export const pages = [
     fields: [
       {
         name: "practice_1",
-        label: "I have skipped meals because I didn't have enough money.",
+        label: " ⁠Have you ever applied for a government-sponsored student loan, bursary, or food subsidy program?",
         type: "scale",
-        scaleType: "frequency",
+        scaleType: "yesno",
       },
       {
         name: "practice_2",
-        label: "I share a room or accommodation with others to reduce costs.",
+        label: "Have you ever reported price gouging (e.g., exorbitant rent or inflated transport fares) to a consumer protection agency or local government authority?",
         type: "scale",
-        scaleType: "frequency",
+        scaleType: "yesno",
       },
       {
         name: "practice_3",
         label:
-          "I take up part-time jobs or side hustles to support myself financially.",
-        type: "scale",
-        scaleType: "frequency",
+          "How often do you utilize government-subsidized public transit or healthcare facilities to reduce your monthly living expenses?",
+         type: "scale",
+  scaleType: "frequency4", // or whatever key your renderer expects
+  options: ["Never", "Rarely", "Frequently", "Always"],
       },
       {
         name: "practice_4",
         label:
-          "I walk instead of paying for transport, in order to save money.",
+          "Have you participated in campus union dialogues, surveys, or petitions directed at government agencies demanding cost-of-living interventions?",
         type: "scale",
-        scaleType: "frequency",
+        scaleType: "yesno",
       },
+       {
+        name: "practice_5",
+        label:
+          " ⁠How frequently do you actively seek out updates on government policy changes regarding student allowances, tax exemptions, or grants?",
+          type: "scale",
+  scaleType: "frequency3",
+  options: ["Never", "Occasionally", "Regularly"],
+      },
+      {
+  name: "practice_6",
+  label:
+    "What practical financial adjustment do you make when government aid fails to cover your monthly living index shortfall?",
+  type: "radio",
+  options: [
+    "Taking part-time work",
+    "Reducing meal intake",
+    "Relying on family",
+    "Peer borrowing",
+    "Other",
+  ],
+},
+{
+  name: "practice_7", // adjust name to match your numbering
+  label:
+    "Would you actively contribute monthly price data to a student-led platform to help government agencies track the Campus Cost of Living Index in real time?",
+  type: "scale",
+  scaleType: "yesnomaybe",
+  options: ["Yes", "No", "Maybe"],
+},
     ],
   },
 ];
 
 export const scaleOptions = {
-  yesno: ["Yes", "No", "Not sure"],
+  yesno: ["Yes", "No",],
+   yesnoneutral: ["Yes", "No", "Neutral" ],
+  yesnounsure: ["Yes", "No", "Unsure" ],
   agree: [
     "Strongly disagree",
     "Disagree",
@@ -244,4 +286,11 @@ export const scaleOptions = {
     "Strongly agree",
   ],
   frequency: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+  frequency3: ["Never", "Occasionally", "Regularly"],
+  frequency4: ["Never", "Rarely", "Frequently", "Always"],
+  yesnomaybe: ["Yes", "No", "Maybe"],
+  effectiveness: ["Very Ineffective", "Ineffective", "Neutral", "Effective", "Very Effective"],
+responsibility: ["Not Responsible", "Slightly Responsible", "Moderately Responsible", "Responsible", "Fully Responsible"],
+fairness: ["Very Unfair", "Unfair", "Neutral", "Fair", "Very Fair"],
+confidence: ["Not Confident at All", "Slightly Confident", "Moderately Confident", "Confident", "Extremely Confident"],
 };
