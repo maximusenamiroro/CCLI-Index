@@ -24,19 +24,19 @@ function LandingPage({ onStart }) {
 
       <div className="landing-categories">
         <div className="category">
-          <Home size={18} strokeWidth={1.75} />
+          <Home size={18} strokeWidth={1.75} color="#1f5f42" />
           <p>Housing</p>
         </div>
         <div className="category">
-          <UtensilsCrossed size={18} strokeWidth={1.75} />
+          <UtensilsCrossed size={18} strokeWidth={1.75} color="#1f5f42" />
           <p>Food</p>
         </div>
         <div className="category">
-          <Bus size={18} strokeWidth={1.75} />
+          <Bus size={18} strokeWidth={1.75} color="#1f5f42" />
           <p>Transport</p>
         </div>
         <div className="category">
-          <Wifi size={18} strokeWidth={1.75} />
+          <Wifi size={18} strokeWidth={1.75} color="#1f5f42" />
           <p>Data</p>
         </div>
       </div>
