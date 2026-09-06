@@ -128,6 +128,17 @@ function App() {
       if (value === undefined || value === '') {
         newErrors[field.name] = 'This field is required'
         valid = false
+        return
+      }
+
+      // If this field allows a manual "Other" entry and that's what was
+      // picked, the follow-up text input must be filled in too.
+      if (field.otherTriggerValue && value === field.otherTriggerValue) {
+        const otherValue = answers[`${field.name}_other`]
+        if (!otherValue || otherValue.trim() === '') {
+          newErrors[field.name] = 'Please type your school\'s name'
+          valid = false
+        }
       }
     })
     setErrors(newErrors)
@@ -234,6 +245,7 @@ function App() {
             key={field.name}
             field={field}
             value={answers[field.name]}
+            otherValue={answers[`${field.name}_other`]}
             error={errors[field.name]}
             onChange={handleChange}
             onCheckboxToggle={handleCheckboxToggle}
@@ -253,7 +265,7 @@ function App() {
   )
 }
 
-function FieldRenderer({ field, value, error, onChange, onCheckboxToggle }) {
+function FieldRenderer({ field, value, otherValue, error, onChange, onCheckboxToggle }) {
   return (
     <div className="field">
       <label className="question">{field.label}</label>
@@ -336,6 +348,16 @@ function FieldRenderer({ field, value, error, onChange, onCheckboxToggle }) {
                 <option key={opt} value={opt}>{opt}</option>
               ))}
         </select>
+      )}
+
+      {field.type === 'select' && field.otherTriggerValue && value === field.otherTriggerValue && (
+        <input
+          type="text"
+          className="other-input"
+          placeholder="Type your school's name"
+          value={otherValue || ''}
+          onChange={e => onChange(`${field.name}_other`, e.target.value)}
+        />
       )}
 
       {field.type === 'checkbox' && (

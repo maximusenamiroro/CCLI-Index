@@ -17,6 +17,8 @@ export const pages = [
         label: "What is your current level of study?",
         type: "radio",
         options: [
+          "OND",
+          "HND",
           "100 Level",
           "200 Level",
           "300 Level",
@@ -44,6 +46,10 @@ export const pages = [
         type: "select",
         groupedOptions: nigerianUniversities,
         placeholder: "Select your university",
+        // If the person picks this exact value, an extra text field
+        // appears (stored as university_other) so they can type their
+        // school in manually instead of being stuck with no match.
+        otherTriggerValue: "Other / Not listed",
       },
       { name: "course", label: "What is your course of study?", type: "text" },
       {
@@ -88,9 +94,7 @@ export const pages = [
           "Price/budget",
           "Location",
           "Finding a roommate",
-          "Landlord requirements (credit check, income proof, etc.)",
           "Not enough apartments available",
-          "Timing (had enough time / not enough time)",
           "Other",
         ],
       },

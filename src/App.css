@@ -384,6 +384,10 @@ textarea:focus,
   padding-right: var(--space-7);
 }
 
+.other-input {
+  margin-top: var(--space-3);
+}
+
 /* Radio / checkbox option lists */
 
 .option-list {
