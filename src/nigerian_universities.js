@@ -278,7 +278,4 @@ export const nigerianUniversities = {
     "Westland University, Iwo",
     "Wigwe University, Isiokpo",
   ],
-  "Other": [
-    "Other / Not listed",
-  ],
 };

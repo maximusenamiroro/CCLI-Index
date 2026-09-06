@@ -17,13 +17,13 @@ export const pages = [
         label: "What is your current level of study?",
         type: "radio",
         options: [
-          "OND",
-          "HND",
           "100 Level",
           "200 Level",
           "300 Level",
           "400 Level",
           "500 Level",
+          "OND",
+          "HND",
           "Other",
         ],
       },
@@ -43,13 +43,10 @@ export const pages = [
       {
         name: "university",
         label: "Which university do you attend?",
-        type: "select",
+        type: "combobox",
         groupedOptions: nigerianUniversities,
-        placeholder: "Select your university",
-        // If the person picks this exact value, an extra text field
-        // appears (stored as university_other) so they can type their
-        // school in manually instead of being stuck with no match.
-        otherTriggerValue: "Other / Not listed",
+        placeholder: "Search for your school",
+        helperText: "Search for your school. If it's not listed, you can add it manually.",
       },
       { name: "course", label: "What is your course of study?", type: "text" },
       {

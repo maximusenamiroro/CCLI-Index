@@ -308,17 +308,17 @@ body {
 
 @keyframes slideInForward {
   from { opacity: 0; transform: translateX(16px); }
-  to { opacity: 1; transform: translateX(0); }
+  to { opacity: 1; }
 }
 
 @keyframes slideInBack {
   from { opacity: 0; transform: translateX(-16px); }
-  to { opacity: 1; transform: translateX(0); }
+  to { opacity: 1; }
 }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; }
 }
 
 /* Fields -- staggered entrance, short delays only (decorative,
@@ -382,6 +382,116 @@ textarea:focus,
   background-size: 6px 6px, 6px 6px;
   background-repeat: no-repeat;
   padding-right: var(--space-7);
+}
+
+.helper-text {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  margin: calc(var(--space-3) * -1) 0 var(--space-3);
+  line-height: 1.5;
+}
+
+/* Searchable combobox (university lookup) */
+
+.combobox {
+  position: relative;
+}
+
+.combobox-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.combobox-icon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-ink-soft);
+  pointer-events: none;
+}
+
+input.combobox-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 16px;
+  padding: var(--space-3) var(--space-4) var(--space-3) 48px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  transition: border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.combobox-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-tint);
+}
+
+.combobox-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  animation: fadeInUp var(--duration-fast) var(--ease-out) both;
+}
+
+/* When rendered via portal directly into <body>, the dropdown is
+   positioned with inline pixel coordinates from getBoundingClientRect()
+   (viewport-relative). It must use "fixed", not "absolute" -- absolute
+   would position relative to the whole document and ignore scroll,
+   landing the dropdown in the wrong place on any page taller than
+   one screen. */
+.combobox-dropdown-portal {
+  position: fixed;
+  top: auto;
+  right: auto;
+}
+
+.combobox-option {
+  padding: var(--space-3) var(--space-4);
+  font-size: 14.5px;
+  color: var(--color-ink);
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.combobox-option:last-child {
+  border-bottom: none;
+}
+
+.combobox-option:hover {
+  background: var(--color-primary-tint);
+}
+
+.combobox-option-manual {
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-accent-tint);
+}
+
+.combobox-option-manual:hover {
+  background: var(--color-accent-tint);
+  opacity: 0.85;
+}
+
+.combobox-empty {
+  padding: var(--space-4);
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  text-align: center;
 }
 
 .other-input {

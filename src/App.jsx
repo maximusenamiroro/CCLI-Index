@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import { Home, UtensilsCrossed, Landmark, ListChecks } from 'lucide-react'
+import { Home, UtensilsCrossed, Landmark, ListChecks, Search } from 'lucide-react'
 import './App.css'
 import { pages, scaleOptions } from './questions'
 import { supabase } from './supabaseClient'
@@ -128,17 +129,6 @@ function App() {
       if (value === undefined || value === '') {
         newErrors[field.name] = 'This field is required'
         valid = false
-        return
-      }
-
-      // If this field allows a manual "Other" entry and that's what was
-      // picked, the follow-up text input must be filled in too.
-      if (field.otherTriggerValue && value === field.otherTriggerValue) {
-        const otherValue = answers[`${field.name}_other`]
-        if (!otherValue || otherValue.trim() === '') {
-          newErrors[field.name] = 'Please type your school\'s name'
-          valid = false
-        }
       }
     })
     setErrors(newErrors)
@@ -245,7 +235,6 @@ function App() {
             key={field.name}
             field={field}
             value={answers[field.name]}
-            otherValue={answers[`${field.name}_other`]}
             error={errors[field.name]}
             onChange={handleChange}
             onCheckboxToggle={handleCheckboxToggle}
@@ -265,10 +254,11 @@ function App() {
   )
 }
 
-function FieldRenderer({ field, value, otherValue, error, onChange, onCheckboxToggle }) {
+function FieldRenderer({ field, value, error, onChange, onCheckboxToggle }) {
   return (
     <div className="field">
       <label className="question">{field.label}</label>
+      {field.helperText && <p className="helper-text">{field.helperText}</p>}
 
       {field.type === 'text' && (
         <input
@@ -350,14 +340,8 @@ function FieldRenderer({ field, value, otherValue, error, onChange, onCheckboxTo
         </select>
       )}
 
-      {field.type === 'select' && field.otherTriggerValue && value === field.otherTriggerValue && (
-        <input
-          type="text"
-          className="other-input"
-          placeholder="Type your school's name"
-          value={otherValue || ''}
-          onChange={e => onChange(`${field.name}_other`, e.target.value)}
-        />
+      {field.type === 'combobox' && (
+        <SearchableCombobox field={field} value={value} onChange={onChange} />
       )}
 
       {field.type === 'checkbox' && (
@@ -398,6 +382,128 @@ function FieldRenderer({ field, value, otherValue, error, onChange, onCheckboxTo
       )}
 
       {error && <p className="error-text">{error}</p>}
+    </div>
+  )
+}
+
+function SearchableCombobox({ field, value, onChange }) {
+  const [query, setQuery] = useState(value || '')
+  const [open, setOpen] = useState(false)
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 })
+  const inputRef = useRef(null)
+
+  // Keep the input text in sync if the value changes from outside
+  // (e.g. navigating back to this page after already answering it).
+  useEffect(() => {
+    setQuery(value || '')
+  }, [value])
+
+  function updateCoords() {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect()
+      setCoords({ top: rect.bottom + 6, left: rect.left, width: rect.width })
+    }
+  }
+
+  // Reposition if the page scrolls or resizes while the dropdown is open,
+  // since it's now rendered outside the normal document flow (in a portal)
+  // and won't move automatically with its "visual" parent.
+  useEffect(() => {
+    if (!open) return
+    function reposition() {
+      updateCoords()
+    }
+    window.addEventListener('scroll', reposition, true)
+    window.addEventListener('resize', reposition)
+    return () => {
+      window.removeEventListener('scroll', reposition, true)
+      window.removeEventListener('resize', reposition)
+    }
+  }, [open])
+
+  const flatOptions = useMemo(() => {
+    if (field.groupedOptions) {
+      return Object.entries(field.groupedOptions).flatMap(([group, opts]) =>
+        opts.map(opt => ({ label: opt, group }))
+      )
+    }
+    return (field.options || []).map(opt => ({ label: opt, group: null }))
+  }, [field.groupedOptions, field.options])
+
+  const trimmedQuery = query.trim()
+  const filtered = trimmedQuery
+    ? flatOptions.filter(o => o.label.toLowerCase().includes(trimmedQuery.toLowerCase())).slice(0, 8)
+    : flatOptions.slice(0, 8)
+
+  // Only offer "add manually" when the typed text isn't already an
+  // exact match for something in the list.
+  const exactMatch = flatOptions.some(
+    o => o.label.toLowerCase() === trimmedQuery.toLowerCase()
+  )
+
+  function selectOption(label) {
+    onChange(field.name, label)
+    setQuery(label)
+    setOpen(false)
+  }
+
+  function selectManual() {
+    if (!trimmedQuery) return
+    onChange(field.name, trimmedQuery)
+    setOpen(false)
+  }
+
+  const dropdown = (
+    <div
+      className="combobox-dropdown combobox-dropdown-portal"
+      style={{ top: coords.top, left: coords.left, width: coords.width }}
+    >
+      {trimmedQuery && !exactMatch && (
+        <div className="combobox-option combobox-option-manual" onMouseDown={selectManual}>
+          Use "{trimmedQuery}" (add manually)
+        </div>
+      )}
+      {filtered.map(opt => (
+        <div
+          key={opt.label}
+          className="combobox-option"
+          onMouseDown={() => selectOption(opt.label)}
+        >
+          {opt.label}
+        </div>
+      ))}
+      {filtered.length === 0 && !trimmedQuery && (
+        <div className="combobox-empty">Start typing to search</div>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="combobox">
+      <div className="combobox-input-wrap">
+        <Search size={16} className="combobox-icon" />
+        <input
+          ref={inputRef}
+          type="text"
+          className="combobox-input"
+          placeholder={field.placeholder || 'Search...'}
+          value={query}
+          onFocus={() => {
+            updateCoords()
+            setOpen(true)
+          }}
+          onChange={e => {
+            setQuery(e.target.value)
+            updateCoords()
+            setOpen(true)
+          }}
+          // Delay closing so a click/tap on a dropdown option registers
+          // before the input's blur event would otherwise hide the list.
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+        />
+      </div>
+
+      {open && createPortal(dropdown, document.body)}
     </div>
   )
 }
