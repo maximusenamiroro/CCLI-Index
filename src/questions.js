@@ -7,6 +7,7 @@
 // university dropdown, and gender/course (kept for cross-university analysis).
 
 import { nigerianUniversities } from './nigerian_universities'
+import { nigerianCourses } from './nigerian_courses'
 
 export const pages = [
   {
@@ -47,8 +48,19 @@ export const pages = [
         groupedOptions: nigerianUniversities,
         placeholder: "Search for your school",
         helperText: "Search for your school. If it's not listed, you can add it manually.",
+        // Manually-typed entries are saved to a shared Supabase table so
+        // future students searching for the same school will find it.
+        remoteGrowth: true,
       },
-      { name: "course", label: "What is your course of study?", type: "text" },
+      {
+        name: "course",
+        label: "What is your course of study?",
+        type: "combobox",
+        groupedOptions: nigerianCourses,
+        placeholder: "Search for your course",
+        helperText: "Search for your course. If it's not listed, you can add it manually.",
+        remoteGrowth: true,
+      },
       {
         name: "accommodation_type",
         label: "What type of accommodation do you live in?",

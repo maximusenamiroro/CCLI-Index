@@ -390,6 +390,7 @@ function SearchableCombobox({ field, value, onChange }) {
   const [query, setQuery] = useState(value || '')
   const [open, setOpen] = useState(false)
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 })
+  const [remoteOptions, setRemoteOptions] = useState([])
   const inputRef = useRef(null)
 
   // Keep the input text in sync if the value changes from outside
@@ -397,6 +398,28 @@ function SearchableCombobox({ field, value, onChange }) {
   useEffect(() => {
     setQuery(value || '')
   }, [value])
+
+  // For fields marked remoteGrowth (university, course), pull in any
+  // values other students have already added manually, so this field's
+  // list grows over time instead of resetting for every new respondent.
+  useEffect(() => {
+    if (!field.remoteGrowth) return
+    let cancelled = false
+
+    async function loadRemoteOptions() {
+      const { data, error } = await supabase
+        .from('custom_options')
+        .select('value')
+        .eq('field_name', field.name)
+
+      if (!cancelled && !error && data) {
+        setRemoteOptions(data.map(row => row.value))
+      }
+    }
+
+    loadRemoteOptions()
+    return () => { cancelled = true }
+  }, [field.remoteGrowth, field.name])
 
   function updateCoords() {
     if (inputRef.current) {
@@ -422,13 +445,22 @@ function SearchableCombobox({ field, value, onChange }) {
   }, [open])
 
   const flatOptions = useMemo(() => {
-    if (field.groupedOptions) {
-      return Object.entries(field.groupedOptions).flatMap(([group, opts]) =>
-        opts.map(opt => ({ label: opt, group }))
-      )
-    }
-    return (field.options || []).map(opt => ({ label: opt, group: null }))
-  }, [field.groupedOptions, field.options])
+    const base = field.groupedOptions
+      ? Object.entries(field.groupedOptions).flatMap(([group, opts]) =>
+          opts.map(opt => ({ label: opt, group }))
+        )
+      : (field.options || []).map(opt => ({ label: opt, group: null }))
+
+    // Merge in remotely-added values that aren't already in the static
+    // list, so a school/course only shows up once even if it was later
+    // added to the static file too.
+    const staticLabelsLower = new Set(base.map(o => o.label.toLowerCase()))
+    const extra = remoteOptions
+      .filter(val => !staticLabelsLower.has(val.toLowerCase()))
+      .map(val => ({ label: val, group: 'Recently added by other students' }))
+
+    return [...base, ...extra]
+  }, [field.groupedOptions, field.options, remoteOptions])
 
   const trimmedQuery = query.trim()
   const filtered = trimmedQuery
@@ -451,6 +483,22 @@ function SearchableCombobox({ field, value, onChange }) {
     if (!trimmedQuery) return
     onChange(field.name, trimmedQuery)
     setOpen(false)
+
+    // Save this new value so future students see it in the list too.
+    // Fire-and-forget: never blocks the person from continuing the
+    // survey, and a duplicate (someone already added the same value)
+    // is expected and safely ignored via the unique constraint.
+    if (field.remoteGrowth && SUBMISSIONS_ENABLED) {
+      supabase
+        .from('custom_options')
+        .insert([{ field_name: field.name, value: trimmedQuery }])
+        .then(({ error }) => {
+          if (error && error.code !== '23505') {
+            // 23505 = unique_violation (already added by someone else) -- fine to ignore.
+            console.error('Could not save new option:', error)
+          }
+        })
+    }
   }
 
   const dropdown = (
