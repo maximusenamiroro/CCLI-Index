@@ -12,7 +12,7 @@ import LandingPage from './LandingPage'
 // no insert, no duplicate-check RPC, no IP/fingerprint lookups. Lets
 // the team freely resubmit while reviewing the frontend. Flip to
 // true once you're ready to connect the backend for real.
-const SUBMISSIONS_ENABLED = true
+const SUBMISSIONS_ENABLED = false
 
 const pageIcons = [Home, UtensilsCrossed, Landmark, ListChecks]
 
